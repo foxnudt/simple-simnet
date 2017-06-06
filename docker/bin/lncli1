@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+. /simnet/bin/config.sh
+lncli --rpcserver localhost:${RPCPORT1} "$@"
