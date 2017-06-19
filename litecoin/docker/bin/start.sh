@@ -86,8 +86,9 @@ sleep 3
 # Now start ltcd again. MINING_ADDRESS is set. So it should use it as a mining address.
 start_ltcd &
 sleep 3
-start_ltcctl generate 1025
-sleep 10
+echo "Generating initial blocks and waiting some time"
+start_ltcctl generate 2025
+sleep 45
 
 start_lnd /simnet/lnd1 $PEERPORT1 $RPCPORT1 &
 start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 &
