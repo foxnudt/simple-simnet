@@ -57,4 +57,6 @@ ADD bin bin
 RUN mkdir -p "/simnet/rpc"
 RUN "gencerts" --host="*" --directory="/simnet/rpc" --force
 ENV PATH=/simnet/bin:$PATH
-CMD ["/simnet/bin/start.sh"]
+
+VOLUME /save_simnet
+ENTRYPOINT ["/simnet/bin/start.sh"]
