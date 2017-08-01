@@ -34,8 +34,8 @@ RUN glide install
 RUN go install . ./cmd/...
 
 # Installation of lnd related stuff
-ARG LNDCOMMIT=master
-ARG LNDREP=https://github.com/lightningnetwork/lnd
+ARG LNDCOMMIT=litecoin-simnet-upd
+ARG LNDREP=https://github.com/BitfuryLightning/lnd
 RUN git clone $LNDREP $GOPATH/src/github.com/lightningnetwork/lnd
 WORKDIR $GOPATH/src/github.com/lightningnetwork/lnd
 RUN git checkout $LNDCOMMIT
