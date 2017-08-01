@@ -51,6 +51,9 @@ RUN echo 'root:toor' | chpasswd
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN printf "\nGatewayPorts yes\n" >>/etc/ssh/sshd_config
 
+#Install delve
+RUN go get github.com/derekparker/delve/cmd/dlv
+
 # Install scripts
 RUN mkdir /simnet
 WORKDIR /simnet

@@ -96,8 +96,12 @@ start_lnd /simnet/lnd3 $PEERPORT3 $RPCPORT3 &
 
 sleep 15
 
+echo "Before launching lnd 1,2,3"
+echo "Step 1"
 ADDRNODE1=$(lncli --rpcserver localhost:$RPCPORT1 newaddress p2wkh | jq  -r ".address")
+echo "Step 2"
 ADDRNODE2=$(lncli --rpcserver localhost:$RPCPORT2 newaddress p2wkh | jq  -r ".address")
+echo "Step 3"
 ADDRNODE3=$(lncli --rpcserver localhost:$RPCPORT3 newaddress p2wkh | jq  -r ".address")
 
 IDENTITYKEY0=$(lncli --rpcserver localhost:$RPCPORT0 getinfo | jq -r ".identity_pubkey")
