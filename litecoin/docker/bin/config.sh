@@ -8,10 +8,10 @@ export RPCPORT3=13109
 
 # Ports to which RPC is forwarded using ssh.
 # lnd listens on localhost so to allow access from external word we need port forwarding
-export RPCPORT0EXT=10009
-export RPCPORT1EXT=11009
-export RPCPORT2EXT=12009
-export RPCPORT3EXT=13009
+export RPCPORT0EXT=10010
+export RPCPORT1EXT=11010
+export RPCPORT2EXT=12010
+export RPCPORT3EXT=13010
 
 export PEERPORT0=10011
 export PEERPORT1=11011

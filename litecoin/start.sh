@@ -7,10 +7,10 @@
 
 mkdir -p save_simnet
 docker run \
-  -p 10010:10009 \
-  -p 11010:11009 \
-  -p 12010:12009 \
-  -p 13010:13009 \
+  -p 10010:10010 \
+  -p 11010:11010 \
+  -p 12010:12010 \
+  -p 13010:13010 \
   --volume ${PWD}/save_simnet:/save_simnet \
   -it \
   simple-simnet-litecoin "$@"
