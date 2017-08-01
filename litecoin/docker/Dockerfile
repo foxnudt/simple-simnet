@@ -24,7 +24,7 @@ RUN go get -u github.com/Masterminds/glide
 ARG rebuild=1
 RUN mkdir -p /tmp/${rebuild}
 
-ARG LTCDCOMMIT=master
+ARG LTCDCOMMIT=38f2b6f507e2523ae972f2ee6ae4c9f04f6c1c4a
 RUN git clone https://github.com/ltcsuite/ltcd \
   $GOPATH/src/github.com/ltcsuite/ltcd
 #RUN git clone https://github.com/ysangkok/ltcd \
@@ -35,7 +35,7 @@ RUN glide install
 RUN go install . ./cmd/ltcctl ./cmd/gencerts
 
 # Installation of lnd related stuff
-ARG LNDCOMMIT=litecoin-simnet-upd
+ARG LNDCOMMIT=93658f50b3767b127285a5867277c9a53d47b57d
 ARG LNDREP=https://github.com/BitfuryLightning/lnd
 RUN git clone $LNDREP $GOPATH/src/github.com/lightningnetwork/lnd
 WORKDIR $GOPATH/src/github.com/lightningnetwork/lnd

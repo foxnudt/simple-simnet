@@ -25,8 +25,8 @@ ARG rebuild=1
 RUN mkdir -p /tmp/${rebuild}
 
 # We install btcd first using roasbeef's fork with segwit support
-ARG BTCDCOMMIT=master
-RUN git clone https://github.com/roasbeef/btcd \
+ARG BTCDCOMMIT=f8c02aff4e7a807ba0c1349e2db03695d8e790e8
+RUN git clone https://github.com/BitfuryLightning/btcd \
  $GOPATH/src/github.com/roasbeef/btcd
 WORKDIR $GOPATH/src/github.com/roasbeef/btcd
 RUN git checkout $BTCDCOMMIT
@@ -34,7 +34,7 @@ RUN glide install
 RUN go install . ./cmd/...
 
 # Installation of lnd related stuff
-ARG LNDCOMMIT=litecoin-simnet-upd
+ARG LNDCOMMIT=93658f50b3767b127285a5867277c9a53d47b57d
 ARG LNDREP=https://github.com/BitfuryLightning/lnd
 RUN git clone $LNDREP $GOPATH/src/github.com/lightningnetwork/lnd
 WORKDIR $GOPATH/src/github.com/lightningnetwork/lnd
