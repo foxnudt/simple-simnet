@@ -95,8 +95,21 @@ else
     echo "Generating initial blocks and waiting some time"
     sleep 3
     start_btcctl generate 1025
-    sleep 10
+    sleep 30
 fi
+
+start_btcd &
+start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+sleep 10
+MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 newaddress p2wkh | jq  -r ".address")
+echo "MINING_ADDRESS=" $MINING_ADDRESS
+kill $(pgrep btcd)
+sleep 3
+# Now start btcd again. MINING_ADDRESS is set. So it should use it as a mining address.
+start_btcd &
+sleep 3
+start_btcctl generate 1025
+sleep 30
 
 start_lnd /simnet/lnd1 $PEERPORT1 $RPCPORT1 &
 start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 &
@@ -132,7 +145,7 @@ lncli --rpcserver localhost:$RPCPORT3 walletbalance
 lncli --rpcserver localhost:$RPCPORT0 sendmany "{\"$ADDRNODE1\":${STARTBALANCE}, \"$ADDRNODE2\":${STARTBALANCE}, \"$ADDRNODE3\":${STARTBALANCE} }"
 sleep 3
 start_btcctl generate 20
-sleep 3
+sleep 60
 
 echo "Balances after send"
 lncli --rpcserver localhost:$RPCPORT0 walletbalance
@@ -146,7 +159,7 @@ sleep 1
 lncli --rpcserver localhost:${RPCPORT1} openchannel --node_key ${IDENTITYKEY2} --local_amt ${CHANNELSIZE} --push_amt ${PUSHAMOUNT}
 sleep 1
 start_btcctl generate 10
-sleep 1
+sleep 10
 
 #Connect second node to third and create a channel
 lncli --rpcserver localhost:${RPCPORT2} connect ${IDENTITYKEY3}@localhost:${PEERPORT3}
@@ -155,7 +168,7 @@ lncli --rpcserver localhost:${RPCPORT2} openchannel --node_key ${IDENTITYKEY3} -
 sleep 1
 start_btcctl generate 10
 
-sleep 1
+sleep 10
 
 lncli --rpcserver localhost:${RPCPORT1} listchannels
 lncli --rpcserver localhost:${RPCPORT1} describegraph
