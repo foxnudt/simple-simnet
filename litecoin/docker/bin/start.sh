@@ -76,19 +76,27 @@ sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT1EXT}:localhost
 sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT2EXT}:localhost:${RPCPORT2} root@localhost &
 sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT3EXT}:localhost:${RPCPORT3} root@localhost &
 
-start_ltcd &
-start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
-sleep 10
-MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 newaddress p2wkh | jq  -r ".address")
-echo "MINING_ADDRESS=" $MINING_ADDRESS
-kill $(pgrep ltcd)
-sleep 3
-# Now start ltcd again. MINING_ADDRESS is set. So it should use it as a mining address.
-start_ltcd &
-sleep 3
-echo "Generating initial blocks and waiting some time"
-start_ltcctl generate 2025
-sleep 45
+if [ "$1" == "--restore-init-state" ]; then
+    cp -a /save_simnet/* /simnet
+    MINING_ADDRESS=$(cat /simnet/MINING_ADDRESS)
+    start_ltcd &
+    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+else
+    start_ltcd &
+    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+    sleep 10
+    MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 newaddress p2wkh | jq  -r ".address")
+    echo "MINING_ADDRESS=" $MINING_ADDRESS
+    echo $MINING_ADDRESS>/simnet/MINING_ADDRESS
+    kill $(pgrep ltcd)
+    sleep 3
+    # Now start ltcd again. MINING_ADDRESS is set. So it should use it as a mining address.
+    start_ltcd &
+    sleep 3
+    echo "Generating initial blocks and waiting some time"
+    start_ltcctl generate 2025
+    sleep 45
+fi
 
 start_lnd /simnet/lnd1 $PEERPORT1 $RPCPORT1 &
 start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 &
@@ -96,12 +104,18 @@ start_lnd /simnet/lnd3 $PEERPORT3 $RPCPORT3 &
 
 sleep 15
 
-echo "Before launching lnd 1,2,3"
-echo "Step 1"
+if [ "$1" == "--save-init-state" ]; then
+    echo "Saving simnet state"
+    pkill -SIGINT lnd
+    sleep 5
+    pkill -SIGINT ltcd
+    sleep 1
+    cp -a /simnet/ltcd /simnet/lnd{0,1,2,3} /simnet/MINING_ADDRESS /save_simnet
+    exit 0
+fi
+
 ADDRNODE1=$(lncli --rpcserver localhost:$RPCPORT1 newaddress p2wkh | jq  -r ".address")
-echo "Step 2"
 ADDRNODE2=$(lncli --rpcserver localhost:$RPCPORT2 newaddress p2wkh | jq  -r ".address")
-echo "Step 3"
 ADDRNODE3=$(lncli --rpcserver localhost:$RPCPORT3 newaddress p2wkh | jq  -r ".address")
 
 IDENTITYKEY0=$(lncli --rpcserver localhost:$RPCPORT0 getinfo | jq -r ".identity_pubkey")

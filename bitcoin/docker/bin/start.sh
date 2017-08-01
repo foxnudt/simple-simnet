@@ -40,19 +40,22 @@ function start_btcd {
 }
 
 function start_lnd {
-    lnd \
-        --datadir="$1/data" \
-        --logdir="$1/logs" \
-        --bitcoin.active \
+    PARAMS=$(echo \
+        "--datadir=$1/data" \
+        "--logdir=$1/logs" \
+        "--bitcoin.active" \
         "--bitcoin.$BITCOIN_NETWORK" \
-        --bitcoin.rpchost="localhost" \
-        --bitcoin.rpccert="/simnet/rpc/rpc.cert" \
-        --bitcoin.rpcuser="$RPCUSER" \
-        --bitcoin.rpcpass="$RPCPASS" \
-        --debuglevel="$DEBUG" \
-        --peerport="$2" \
-        --rpcport="$3"\
-        "$@" &>/dev/null
+        "--bitcoin.rpchost=localhost" \
+        "--bitcoin.rpccert=/simnet/rpc/rpc.cert" \
+        "--bitcoin.rpcuser=$RPCUSER" \
+        "--bitcoin.rpcpass=$RPCPASS" \
+        "--debuglevel=$DEBUG" \
+        "--peerport=$2" \
+        "--rpcport=$3"\
+        "$@"
+        )
+    echo "Command: lnd $PARAMS"
+    lnd $PARAMS &>/dev/null
 }
 
 function start_btcctl {
@@ -89,6 +92,7 @@ else
     sleep 3
     # Now start btcd again. MINING_ADDRESS is set. So it should use it as a mining address.
     start_btcd &
+    echo "Generating initial blocks and waiting some time"
     sleep 3
     start_btcctl generate 1025
     sleep 10
