@@ -13,7 +13,7 @@ docker run \
   -p 13009:13009 \
   --volume ${PWD}/save_simnet:/save_simnet \
   -it \
-  simple-simnet-bitcoin "$@"
+  mkola1/simple-simnet-bitcoin:0.1 "$@"
 
 # Need to change files ownership in save_simnet
 # They will have root because they were create in container by root proccess
