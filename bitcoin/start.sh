@@ -6,12 +6,14 @@
 # 3. --restore-init-state Start simnet and restore ints state from the save. Note: pubkeys will be the same for each run.
 
 mkdir -p save_simnet
+mkdir -p certs
 docker run \
   -p 10009:10009 \
   -p 11009:11009 \
   -p 12009:12009 \
   -p 13009:13009 \
   --volume ${PWD}/save_simnet:/save_simnet \
+  --volume ${PWD}/certs:/certs \
   -it \
   mkola1/simple-simnet-bitcoin:lnd-master "$@"
 

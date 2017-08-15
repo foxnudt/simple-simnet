@@ -16,6 +16,10 @@
 mkdir -p /root/.lnd
 touch /root/.lnd/lnd.conf
 
+# Create directory for certificates.
+# We will need them to connect from outside world
+mkdir -p /certs
+
 function start_btcd {
     PARAMS=$(echo \
         "--$BITCOIN_NETWORK" \
@@ -135,6 +139,12 @@ start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 &
 start_lnd /simnet/lnd3 $PEERPORT3 $RPCPORT3 &
 
 sleep 15
+
+# Copy certs to output dir
+cp /simnet/lnd0/tls.cert /certs/lnd_tls0.cert
+cp /simnet/lnd1/tls.cert /certs/lnd_tls1.cert
+cp /simnet/lnd2/tls.cert /certs/lnd_tls2.cert
+cp /simnet/lnd3/tls.cert /certs/lnd_tls3.cert
 
 if [ "$1" == "--save-init-state" ]; then
     echo "Saving simnet state"
