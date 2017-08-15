@@ -12,6 +12,10 @@ docker run \
   -p 11009:11009 \
   -p 12009:12009 \
   -p 13009:13009 \
+  -p 10025:10025 \
+  -p 11025:11025 \
+  -p 12025:12025 \
+  -p 13025:13025 \
   --volume ${PWD}/save_simnet:/save_simnet \
   --volume ${PWD}/certs:/certs \
   -it \

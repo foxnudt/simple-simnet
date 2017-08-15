@@ -44,8 +44,7 @@ function start_btcd {
     # Print command and start bitcoin node.
     # Launch btcd in background
     echo "Command: btcd $PARAMS"
-    btcd $PARAMS
-#    &>/dev/null
+    btcd $PARAMS &>/dev/null
 }
 
 function start_lnd {
@@ -63,11 +62,11 @@ function start_lnd {
         "--debuglevel=$DEBUG" \
         "--peerport=$2" \
         "--rpcport=$3"\
+        "--profile=$4"\
         "$@"
         )
     echo "Command: lnd $PARAMS"
-    lnd $PARAMS
-#    &>/dev/null
+    lnd $PARAMS &>/dev/null
 }
 
 function start_btcctl {
@@ -83,26 +82,27 @@ function start_btcctl {
 # Start ssh for port forwarding
 /usr/sbin/sshd
 sleep 1
+# Port forwarding for RPC port
 sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT0EXT}:localhost:${RPCPORT0} root@localhost &
 sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT1EXT}:localhost:${RPCPORT1} root@localhost &
 sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT2EXT}:localhost:${RPCPORT2} root@localhost &
 sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${RPCPORT3EXT}:localhost:${RPCPORT3} root@localhost &
 
+# Port forwarding for profiler port
+sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${PROFILEPORT0EXT}:localhost:${PROFILEPORT0} root@localhost &
+sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${PROFILEPORT1EXT}:localhost:${PROFILEPORT1} root@localhost &
+sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${PROFILEPORT2EXT}:localhost:${PROFILEPORT2} root@localhost &
+sshpass -p toor ssh -nNT -o StrictHostKeyChecking=no -R ${PROFILEPORT3EXT}:localhost:${PROFILEPORT3} root@localhost &
+
 if [ "$1" == "--restore-init-state" ]; then
     cp -a /save_simnet/* /simnet
     MINING_ADDRESS=$(cat /simnet/MINING_ADDRESS)
     start_btcd &
-    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 $PROFILEPORT0 &
 else
     start_btcd &
-    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 $PROFILEPORT0 &
     sleep 10
-    lncli --help
-    ls -l /simnet/lnd0
-    ls -l /simnet/lnd0/data
-    ls -l /simnet/lnd0/data/simnet
-    echo "**********************"
-    echo "INfo:" $(lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert getinfo)
     MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert newaddress p2wkh | jq  -r ".address")
     echo "MINING_ADDRESS=" $MINING_ADDRESS
     echo $MINING_ADDRESS>/simnet/MINING_ADDRESS
@@ -114,7 +114,7 @@ else
     start_btcd &
     sleep 3
     echo "Starting lnd again and waiting some time"
-    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+    start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 $PROFILEPORT0 &
     sleep 10
     echo "Generating initial blocks and waiting some time"
     start_btcctl generate 1025
@@ -122,7 +122,7 @@ else
 fi
 
 start_btcd &
-start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 &
+start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 $PROFILEPORT0 &
 sleep 10
 MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert newaddress p2wkh | jq  -r ".address")
 echo "MINING_ADDRESS=" $MINING_ADDRESS
@@ -134,9 +134,9 @@ sleep 3
 start_btcctl generate 1025
 sleep 30
 
-start_lnd /simnet/lnd1 $PEERPORT1 $RPCPORT1 &
-start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 &
-start_lnd /simnet/lnd3 $PEERPORT3 $RPCPORT3 &
+start_lnd /simnet/lnd1 $PEERPORT1 $RPCPORT1 $PROFILEPORT1 &
+start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 $PROFILEPORT2 &
+start_lnd /simnet/lnd3 $PEERPORT3 $RPCPORT3 $PROFILEPORT3 &
 
 sleep 15
 
