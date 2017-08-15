@@ -29,9 +29,9 @@ export BITCOIN_NETWORK="simnet"
 export STARTBALANCE=1000000000000
 
 # Capacity of opening lighning channels
-export CHANNELSIZE=200000000000
+export CHANNELSIZE=2000000
 # How much money should be push to other party on channel opening
 # Balances will be (approximately):
 # for opening party: $CHANNELSIZE-$PUSHAMOUNT
 # for other party: $PUSHAMOUNT
-export PUSHAMOUNT=100000000000
+export PUSHAMOUNT=1000000

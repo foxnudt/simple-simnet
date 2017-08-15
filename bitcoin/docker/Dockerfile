@@ -34,8 +34,8 @@ RUN glide install
 RUN go install . ./cmd/...
 
 # Installation of lnd related stuff
-ARG LNDCOMMIT=93658f50b3767b127285a5867277c9a53d47b57d
-ARG LNDREP=https://github.com/BitfuryLightning/lnd
+ARG LNDCOMMIT=06ff0a0192644ef6d2133757f436816363a0333b
+ARG LNDREP=https://github.com/lightningnetwork/lnd
 RUN git clone $LNDREP $GOPATH/src/github.com/lightningnetwork/lnd
 WORKDIR $GOPATH/src/github.com/lightningnetwork/lnd
 RUN git checkout $LNDCOMMIT
