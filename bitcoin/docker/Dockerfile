@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 MAINTAINER mkl
 
-ARG GOVERSION=1.8.3
+ARG GOVERSION=1.9rc2
 
 # Install some basic utilities
 # We may use ssh for port forwarding
