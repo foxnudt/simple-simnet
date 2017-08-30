@@ -25,8 +25,8 @@ ARG rebuild=1
 RUN mkdir -p /tmp/${rebuild}
 
 # We install btcd first using roasbeef's fork with segwit support
-ARG BTCDCOMMIT=f8c02aff4e7a807ba0c1349e2db03695d8e790e8
-RUN git clone https://github.com/BitfuryLightning/btcd \
+ARG BTCDCOMMIT=ee68739ba4ed83f244b115bec0e176f5711b3e7a
+RUN git clone https://github.com/roasbeef/btcd \
  $GOPATH/src/github.com/roasbeef/btcd
 WORKDIR $GOPATH/src/github.com/roasbeef/btcd
 RUN git checkout $BTCDCOMMIT
@@ -34,7 +34,7 @@ RUN glide install
 RUN go install . ./cmd/...
 
 # Installation of lnd related stuff
-ARG LNDCOMMIT=06ff0a0192644ef6d2133757f436816363a0333b
+ARG LNDCOMMIT=19a843016e58f4ce3923f1091803d17f321e1649
 ARG LNDREP=https://github.com/lightningnetwork/lnd
 RUN git clone $LNDREP $GOPATH/src/github.com/lightningnetwork/lnd
 WORKDIR $GOPATH/src/github.com/lightningnetwork/lnd

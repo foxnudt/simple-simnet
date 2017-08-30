@@ -53,6 +53,7 @@ function start_lnd {
         "--logdir=$1/logs" \
         "--tlscertpath=$1/tls.cert" \
         "--tlskeypath=$1/tls.key" \
+        "--no-macaroons" \
         "--bitcoin.active" \
         "--bitcoin.$BITCOIN_NETWORK" \
         "--bitcoin.rpchost=localhost" \
@@ -103,7 +104,7 @@ else
     start_btcd &
     start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 $PROFILEPORT0 &
     sleep 10
-    MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert newaddress p2wkh | jq  -r ".address")
+    MINING_ADDRESS=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert newaddress p2wkh | jq  -r ".address")
     echo "MINING_ADDRESS=" $MINING_ADDRESS
     echo $MINING_ADDRESS>/simnet/MINING_ADDRESS
     kill -SIGINT $(pgrep lnd)
@@ -124,7 +125,7 @@ fi
 start_btcd &
 start_lnd /simnet/lnd0 $PEERPORT0 $RPCPORT0 $PROFILEPORT0 &
 sleep 10
-MINING_ADDRESS=$(lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert newaddress p2wkh | jq  -r ".address")
+MINING_ADDRESS=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert newaddress p2wkh | jq  -r ".address")
 echo "MINING_ADDRESS=" $MINING_ADDRESS
 kill $(pgrep btcd)
 sleep 3
@@ -156,51 +157,51 @@ if [ "$1" == "--save-init-state" ]; then
     exit 0
 fi
 
-ADDRNODE1=$(lncli --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert newaddress p2wkh | jq  -r ".address")
-ADDRNODE2=$(lncli --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert newaddress p2wkh | jq  -r ".address")
-ADDRNODE3=$(lncli --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert newaddress p2wkh | jq  -r ".address")
+ADDRNODE1=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert newaddress p2wkh | jq  -r ".address")
+ADDRNODE2=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert newaddress p2wkh | jq  -r ".address")
+ADDRNODE3=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert newaddress p2wkh | jq  -r ".address")
 
-IDENTITYKEY0=$(lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert getinfo | jq -r ".identity_pubkey")
-IDENTITYKEY1=$(lncli --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert getinfo | jq -r ".identity_pubkey")
-IDENTITYKEY2=$(lncli --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert getinfo | jq -r ".identity_pubkey")
-IDENTITYKEY3=$(lncli --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert getinfo | jq -r ".identity_pubkey")
+IDENTITYKEY0=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert getinfo | jq -r ".identity_pubkey")
+IDENTITYKEY1=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert getinfo | jq -r ".identity_pubkey")
+IDENTITYKEY2=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert getinfo | jq -r ".identity_pubkey")
+IDENTITYKEY3=$(lncli --no-macaroons --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert getinfo | jq -r ".identity_pubkey")
 
 echo "Balances before send"
-lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert walletbalance
-lncli --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert walletbalance
-lncli --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert walletbalance
-lncli --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert walletbalance
 
-lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert sendmany "{\"$ADDRNODE1\":${STARTBALANCE}, \"$ADDRNODE2\":${STARTBALANCE}, \"$ADDRNODE3\":${STARTBALANCE} }"
+lncli --no-macaroons --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert sendmany "{\"$ADDRNODE1\":${STARTBALANCE}, \"$ADDRNODE2\":${STARTBALANCE}, \"$ADDRNODE3\":${STARTBALANCE} }"
 sleep 3
 start_btcctl generate 20
 sleep 60
 
 echo "Balances after send"
-lncli --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert walletbalance
-lncli --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert walletbalance
-lncli --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert walletbalance
-lncli --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT0 --tlscertpath /simnet/lnd0/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT1 --tlscertpath /simnet/lnd1/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT2 --tlscertpath /simnet/lnd2/tls.cert walletbalance
+lncli --no-macaroons --rpcserver localhost:$RPCPORT3 --tlscertpath /simnet/lnd3/tls.cert walletbalance
 
 #Connect first node to second and create a channel
-lncli --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert connect ${IDENTITYKEY2}@localhost:${PEERPORT2}
+lncli --no-macaroons --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert connect ${IDENTITYKEY2}@localhost:${PEERPORT2}
 sleep 1
-lncli --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert openchannel --node_key ${IDENTITYKEY2} --local_amt ${CHANNELSIZE} --push_amt ${PUSHAMOUNT}
+lncli --no-macaroons --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert openchannel --node_key ${IDENTITYKEY2} --local_amt ${CHANNELSIZE} --push_amt ${PUSHAMOUNT}
 sleep 1
 start_btcctl generate 10
 sleep 10
 
 #Connect second node to third and create a channel
-lncli --rpcserver localhost:${RPCPORT2} --tlscertpath /simnet/lnd2/tls.cert connect ${IDENTITYKEY3}@localhost:${PEERPORT3}
+lncli --no-macaroons --rpcserver localhost:${RPCPORT2} --tlscertpath /simnet/lnd2/tls.cert connect ${IDENTITYKEY3}@localhost:${PEERPORT3}
 sleep 1
-lncli --rpcserver localhost:${RPCPORT2} --tlscertpath /simnet/lnd2/tls.cert openchannel --node_key ${IDENTITYKEY3} --local_amt ${CHANNELSIZE} --push_amt ${PUSHAMOUNT}
+lncli --no-macaroons --rpcserver localhost:${RPCPORT2} --tlscertpath /simnet/lnd2/tls.cert openchannel --node_key ${IDENTITYKEY3} --local_amt ${CHANNELSIZE} --push_amt ${PUSHAMOUNT}
 sleep 1
 start_btcctl generate 10
 
 sleep 10
 
-lncli --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert listchannels
-lncli --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert describegraph
+lncli --no-macaroons --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert listchannels
+lncli --no-macaroons --rpcserver localhost:${RPCPORT1} --tlscertpath /simnet/lnd1/tls.cert describegraph
 
 echo "lnd0 (lncli0) is not connected to other lnd nodes, it is used as bitcoin wallet"
 echo "lnd1 (lncli1) has channel and is connected to lnd2 (lncli2)"
