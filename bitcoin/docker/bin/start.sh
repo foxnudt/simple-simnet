@@ -139,7 +139,8 @@ start_lnd /simnet/lnd1 $PEERPORT1 $RPCPORT1 $PROFILEPORT1 &
 start_lnd /simnet/lnd2 $PEERPORT2 $RPCPORT2 $PROFILEPORT2 &
 start_lnd /simnet/lnd3 $PEERPORT3 $RPCPORT3 $PROFILEPORT3 &
 
-sleep 15
+echo "Waiting until lnd starts"
+sleep 30
 
 # Copy certs to output dir
 cp /simnet/lnd0/tls.cert /certs/lnd_tls0.cert

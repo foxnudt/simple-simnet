@@ -37,7 +37,7 @@ export BITCOIN_NETWORK="simnet"
 
 # Initial balances for nodes
 # This amount is satoshis will be sent to each node excluding wallet
-export STARTBALANCE=1000000000000
+export STARTBALANCE=100000000
 
 # Capacity of opening lighning channels
 export CHANNELSIZE=2000000
